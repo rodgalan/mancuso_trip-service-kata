@@ -25,25 +25,42 @@ public class TripServiceTest {
     List<Trip> trips = tripService.getTripsByUser(requestedUser);
 
     assertThat(trips).isEmpty();
+  }
 
+  @Test
+  public void when_users_are_friends_then_trips_are_returned() {
+    User loggedUser = new User();
+
+    User requestedUser = new User();
+    requestedUser.addFriend(loggedUser);
+    Trip trip = new Trip();
+    requestedUser.addTrip(trip);
+
+    TripServiceTestable tripService = new TripServiceTestable(loggedUser);
+    List<Trip> trips = tripService.getTripsByUser(requestedUser);
+
+    assertThat(trips).containsExactly(trip);
   }
 }
 
 
+class TripServiceTestable extends TripService {
+  private final User user;
 
-   class TripServiceTestable extends TripService {
-    private final User user;
-
-    public TripServiceTestable(User user) {
-      this.user = user;
-    }
-
-    @Override
-    protected User getLoggedUser() {
-      return user;
-    }
-
+  public TripServiceTestable(User user) {
+    this.user = user;
   }
+
+  @Override
+  protected User getLoggedUser() {
+    return user;
+  }
+
+  @Override
+  protected List<Trip> getUserTrips(User user) {
+    return user.trips();
+  }
+}
 
 	
 
