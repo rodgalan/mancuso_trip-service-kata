@@ -12,8 +12,7 @@ public class TripService {
   public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
     User loggedUser = getLoggedUser();
     validateLoggedUser(loggedUser);
-    boolean isFriend = user.getFriends().stream().anyMatch(friend -> friend.equals(loggedUser));
-    return isFriend ? getUserTrips(user) : new ArrayList<Trip>();
+    return user.isFriendOf(loggedUser) ? getUserTrips(user) : new ArrayList<Trip>();
   }
 
   protected User getLoggedUser() {
