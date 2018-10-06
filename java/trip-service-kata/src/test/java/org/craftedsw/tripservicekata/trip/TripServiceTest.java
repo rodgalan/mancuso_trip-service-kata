@@ -12,8 +12,8 @@ public class TripServiceTest {
 
   @Test(expected = UserNotLoggedInException.class)
   public void when_user_not_logged_then_fails() {
-    TripServiceTestable tripService = new TripServiceTestable(null);
-    tripService.getTripsByUser(null);
+    TripServiceTestable tripService = new TripServiceTestable();
+    tripService.getTripsByUser(null,null);
   }
 
   @Test
@@ -21,8 +21,8 @@ public class TripServiceTest {
     User loggedUser = new User.Builder().build();
     User requestedUser = new User.Builder().build();
 
-    TripServiceTestable tripService = new TripServiceTestable(loggedUser);
-    List<Trip> trips = tripService.getTripsByUser(requestedUser);
+    TripServiceTestable tripService = new TripServiceTestable();
+    List<Trip> trips = tripService.getTripsByUser(loggedUser, requestedUser);
 
     assertThat(trips).isEmpty();
   }
@@ -33,8 +33,8 @@ public class TripServiceTest {
     User loggedUser = new User.Builder().build();
     User requestedUser = new User.Builder().withFriend(loggedUser).withTrip(trip).build();
 
-    TripServiceTestable tripService = new TripServiceTestable(loggedUser);
-    List<Trip> trips = tripService.getTripsByUser(requestedUser);
+    TripServiceTestable tripService = new TripServiceTestable();
+    List<Trip> trips = tripService.getTripsByUser(loggedUser, requestedUser);
 
     assertThat(trips).containsExactly(trip);
   }
@@ -42,16 +42,6 @@ public class TripServiceTest {
 }
 
 class TripServiceTestable extends TripService {
-  private final User user;
-
-  TripServiceTestable(User user) {
-    this.user = user;
-  }
-
-  @Override
-  protected User getLoggedUser() {
-    return user;
-  }
 
   @Override
   protected List<Trip> getUserTrips(User user) {
