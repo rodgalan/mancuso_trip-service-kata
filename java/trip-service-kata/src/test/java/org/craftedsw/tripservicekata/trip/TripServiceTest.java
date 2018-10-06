@@ -18,8 +18,8 @@ public class TripServiceTest {
 
   @Test
   public void when_users_are_not_friends_then_no_trips_are_returned() {
-    User loggedUser = new UserBuilder().build();
-    User requestedUser = new UserBuilder().build();
+    User loggedUser = new User.Builder().build();
+    User requestedUser = new User.Builder().build();
 
     TripServiceTestable tripService = new TripServiceTestable(loggedUser);
     List<Trip> trips = tripService.getTripsByUser(requestedUser);
@@ -30,8 +30,8 @@ public class TripServiceTest {
   @Test
   public void when_users_are_friends_then_trips_are_returned() {
     Trip trip = new Trip();
-    User loggedUser = new UserBuilder().build();
-    User requestedUser = new UserBuilder().withFriend(loggedUser).withTrip(trip).build();
+    User loggedUser = new User.Builder().build();
+    User requestedUser = new User.Builder().withFriend(loggedUser).withTrip(trip).build();
 
     TripServiceTestable tripService = new TripServiceTestable(loggedUser);
     List<Trip> trips = tripService.getTripsByUser(requestedUser);
@@ -39,28 +39,6 @@ public class TripServiceTest {
     assertThat(trips).containsExactly(trip);
   }
 
-  static class UserBuilder{
-    private User user;
-
-    UserBuilder() {
-      this.user = new User();
-    }
-
-    User build(){
-      return user;
-    }
-
-    UserBuilder withFriend(User friend){
-      user.addFriend(friend);
-      return this;
-    }
-
-    UserBuilder withTrip(Trip trip){
-      user.addTrip(trip);
-      return this;
-    }
-
-  }
 }
 
 class TripServiceTestable extends TripService {
