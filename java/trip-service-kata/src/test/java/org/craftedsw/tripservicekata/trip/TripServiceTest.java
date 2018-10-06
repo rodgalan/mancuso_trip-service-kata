@@ -2,18 +2,34 @@ package org.craftedsw.tripservicekata.trip;
 
 import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TripServiceTest {
+
+  @Mock
+  private TripDAO tripDAO;
+  private TripService tripService;
+
+  @Before
+  public void setup() {
+    tripService = new TripService(tripDAO);
+  }
 
   @Test(expected = UserNotLoggedInException.class)
   public void when_user_not_logged_then_fails() {
-    TripServiceTestable tripService = new TripServiceTestable();
-    tripService.getTripsByUser(null,null);
+    tripService.getTripsByUser(null, null);
   }
 
   @Test
@@ -21,7 +37,6 @@ public class TripServiceTest {
     User loggedUser = new User.Builder().build();
     User requestedUser = new User.Builder().build();
 
-    TripServiceTestable tripService = new TripServiceTestable();
     List<Trip> trips = tripService.getTripsByUser(loggedUser, requestedUser);
 
     assertThat(trips).isEmpty();
@@ -31,22 +46,14 @@ public class TripServiceTest {
   public void when_users_are_friends_then_trips_are_returned() {
     Trip trip = new Trip();
     User loggedUser = new User.Builder().build();
-    User requestedUser = new User.Builder().withFriend(loggedUser).withTrip(trip).build();
+    User requestedUser = new User.Builder().withFriend(loggedUser).build();
 
-    TripServiceTestable tripService = new TripServiceTestable();
+    when(tripDAO.findTrips(eq(requestedUser))).thenReturn(Arrays.asList(trip));
     List<Trip> trips = tripService.getTripsByUser(loggedUser, requestedUser);
 
     assertThat(trips).containsExactly(trip);
   }
 
-}
-
-class TripServiceTestable extends TripService {
-
-  @Override
-  protected List<Trip> getUserTrips(User user) {
-    return user.trips();
-  }
 }
 
 	
