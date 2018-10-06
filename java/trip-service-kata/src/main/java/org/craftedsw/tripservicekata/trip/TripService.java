@@ -9,34 +9,27 @@ import org.craftedsw.tripservicekata.user.UserSession;
 
 public class TripService {
 
-	public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
-		List<Trip> tripList = new ArrayList<Trip>();
-		User loggedUser = getLoggedUser();
-		boolean isFriend = false;
-		if (loggedUser != null) {
-			for (User friend : user.getFriends()) {
-				if (friend.equals(loggedUser)) {
-					isFriend = true;
-					break;
-				}
-			}
-			if (isFriend) {
-				tripList = getUserTrips(user);
-			}
-			return tripList;
-		} else {
-			throw new UserNotLoggedInException();
-		}
-	}
+  public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
+    User loggedUser = getLoggedUser();
+    validateLoggedUser(loggedUser);
+    boolean isFriend = user.getFriends().stream().anyMatch(friend -> friend.equals(loggedUser));
+    return isFriend ? getUserTrips(user) : new ArrayList<Trip>();
+  }
 
-	protected List<Trip> getUserTrips(User user) {
-		List<Trip> tripList;
-		tripList = TripDAO.findTripsByUser(user);
-		return tripList;
-	}
+  protected User getLoggedUser() {
+    return UserSession.getInstance().getLoggedUser();
+  }
 
-	protected User getLoggedUser() {
-		return UserSession.getInstance().getLoggedUser();
-	}
+  private void validateLoggedUser(User user) {
+    if (user == null) {
+      throw new UserNotLoggedInException();
+    }
+  }
+
+  protected List<Trip> getUserTrips(User user) {
+    List<Trip> tripList;
+    tripList = TripDAO.findTripsByUser(user);
+    return tripList;
+  }
 
 }
