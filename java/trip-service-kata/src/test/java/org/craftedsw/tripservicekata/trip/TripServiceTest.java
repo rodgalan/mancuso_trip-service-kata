@@ -42,20 +42,20 @@ public class TripServiceTest {
   static class UserBuilder{
     private User user;
 
-    public UserBuilder() {
+    UserBuilder() {
       this.user = new User();
     }
 
-    public User build(){
+    User build(){
       return user;
     }
 
-    public UserBuilder withFriend(User friend){
+    UserBuilder withFriend(User friend){
       user.addFriend(friend);
       return this;
     }
 
-    public UserBuilder withTrip(Trip trip){
+    UserBuilder withTrip(Trip trip){
       user.addTrip(trip);
       return this;
     }
@@ -66,7 +66,7 @@ public class TripServiceTest {
 class TripServiceTestable extends TripService {
   private final User user;
 
-  public TripServiceTestable(User user) {
+  TripServiceTestable(User user) {
     this.user = user;
   }
 
